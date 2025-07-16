@@ -1,1 +1,64 @@
+#🚁🔥💖🧯☁⚡🌩🌪🌨🏆
+# 0 = 🔳
+# 1 = 🟩
+# 2 = 🌲
+# 3 = 🌊
+# 4 = 🏥
+# 5 = 🏬
+# 6 = 🗻
+from utils import randbool as rb
+from utils import randcell
+from utils import randcell2
+from utils import randboardcell as startRiver
+
+CELL_TYPES = "🔳🟩🌲🌊🏥🏬🗻"
+
+class Map:
+
+    #надо переделать
+    def generate_river(self, l):
+        rc = startRiver(self.w, self.h) if rb(1,3) else  randcell(self.w, self.h) #
+        print(rc)
+        rx, ry = rc[0], rc[1]
+        self.cells[ry][rx] = 3
+        while l > 0:
+            rc2 = randcell2(rx,ry)
+            rx2, ry2 = rc2[0], rc2[1]
+            print(rc2)
+            if(self.check_baumds(rx2, ry2) ):#and 
+
+                self.cells[ry2][rx2] = 3
+                rx, ry = rx2, ry2
+                l -= 1
+
+    def WaterColisium(self, x, y):
+        pass
+
+    def isWater(self, x, y):
+        return self.cells[y][x] == 3
+
+    def generate_forest(self, r, mxr):
+        for ri in range(self.h):
+            for ci in range(self.w):
+                if(self.cells[ri][ci] == 0):
+                    continue
+                if rb(r, mxr):
+                    self.cells[ri][ci] = 2
+
+    def print_map(self):
+        for row in self.cells:
+            for cell in row:
+                if(cell >= 0 and cell < len(CELL_TYPES)):
+                    print(CELL_TYPES[cell], end="")
+            print()
+
+    def check_baumds(self, w, h):
+        if ( h < 1 or w < 1 or  w >= self.w-1 or h >= self.h-1 or self.cells[h][w] == 0):
+            return False
+        return True
+
+    def __init__(self, w, h ):
+        self.w = w
+        self.h = h
+        self.cells = [[(0 if(j==0 or i == 0 or j == h-1 or i == w-1 ) else 1)  for i in range(w)] for j in range(h)]
 
