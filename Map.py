@@ -1,4 +1,4 @@
-#🚁💖🧯☁⚡🌩🌪🌨🏆
+#💖🧯☁⚡🌩🌪🌨🏆
 # 0 = 🔳
 # 1 = 🟩
 # 2 = 🌲
@@ -7,14 +7,36 @@
 # 5 = 🏬
 # 6 = 🗻
 # 7 = 🔥
+# 8 = 🚁
 from utils import randbool as rb
 from utils import randcell
 from utils import randcell2
 from utils import randboardcell as startRiver
 
-CELL_TYPES = "🔳🟩🌲🌊🏥🏬🗻🔥"
+CELL_TYPES = "🔳🟩🌲🌊🏥🏬🗻🔥🚁"
 
 class Map:
+                 
+    def __init__(self, w, h ):
+        self.w = w
+        self.h = h
+        self.cells = [[(0 if(j==0 or i == 0 or j == h-1 or i == w-1 ) else 1)  for i in range(w)] for j in range(h)]
+
+    def check_baunds(self, w, h):
+        if ( h < 1 or w < 1 or  w >= self.w-1 or h >= self.h-1 or self.cells[h][w] == 0):
+            return False
+        return True
+    
+    def print_map(self, helic):
+        for ri in range(self.h):
+            for ci in range(self.w):
+                cell = self.cells[ri][ci]
+                if(helic.x == ri and helic.y == ci):
+                    print(CELL_TYPES[8], end="")
+                elif(cell >= 0 and cell < len(CELL_TYPES)):
+                    print(CELL_TYPES[cell], end="")
+            print()
+
 
     #надо переделать
     def generate_river(self, l):
@@ -50,18 +72,6 @@ class Map:
         if(self.check_baunds(cx,cy) and self.cells[cy][cx] == 1):
             self.cells[cy][cx] = 2
 
-    def print_map(self):
-        for row in self.cells:
-            for cell in row:
-                if(cell >= 0 and cell < len(CELL_TYPES)):
-                    print(CELL_TYPES[cell], end="")
-            print()
-
-    def check_baunds(self, w, h):
-        if ( h < 1 or w < 1 or  w >= self.w-1 or h >= self.h-1 or self.cells[h][w] == 0):
-            return False
-        return True
-    
     def add_fire(self):
         c = randcell(self.w, self.h)
         cx, cy = c[0], c[1]
@@ -76,9 +86,4 @@ class Map:
                 if self.cells[ri][ci] == 7:
                     self.cells[ri][ci] = 1
                     self.add_fire()
-                    
-    def __init__(self, w, h ):
-        self.w = w
-        self.h = h
-        self.cells = [[(0 if(j==0 or i == 0 or j == h-1 or i == w-1 ) else 1)  for i in range(w)] for j in range(h)]
-
+   
