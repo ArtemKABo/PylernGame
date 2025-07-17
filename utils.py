@@ -22,10 +22,15 @@ def randboardcell(w, h):
     else: 
         return(1, (l1 + l2)*2 - c)
 
+def moves(a):
+    moves = { 'w':[0, -1], 'd':[1, 0], 's':[0, 1], 'a':[-1, 0]}
+    if a in moves.keys():
+        return moves[a]
+    return[0, 0]
 
 #0 - наверх, 1 - направо, 2 - вниз, 3 - направо
 def randcell2(x, y):
-    moves = [[0, -1], [1, 0], [0, 1], [-1, 0]]
+    move = ['w', 'a', 's', 'd']
     t = rand(0, 3)
-    dx, dy = moves[t][0], moves[t][1]
-    return (x + dx, y + dy)
+    rc = moves(move[t])
+    return (x + rc[0], y + rc[1])
