@@ -103,6 +103,7 @@ class Map:
                 if self.cells[ri][ci] == 7:
                     self.cells[ri][ci] = 1
                     helico.score -= self.firestraff
+                    helico.TotalScore -= self.firestraff
                     self.add_fire()
         if rb(2,3):
             self.add_fire()
@@ -144,3 +145,11 @@ class Map:
         if(d == 2):
             helico.lives -= 1
    
+    def export_data(self):
+        return {"cells" : self.cells,
+                "clouds": self.clouds.cells}
+    
+    def import_map(self, data):
+        self.cells = data["cells"] or self.cells
+        self.clouds.cells = data["clouds"] or self.clouds.cells
+

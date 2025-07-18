@@ -3,33 +3,55 @@
 from pynput import keyboard
 from Map import Map
 import time
+import json
 import os
 from Helicopter import helicopter as helico
 from Clouds import clouds
 
 TICK_SLEEP = 0.001
-TREE_UPDATE = 1000
-FIRE_UPDATE = 2000
-CLOUDS_UPDATE = 8000
+TREE_UPDATE = 900
+FIRE_UPDATE = 1100
+CLOUDS_UPDATE = 3900
 MAP_H, MAP_W = 12 , 22
 
 
 def game_over(helic):
     os.system('cls')
     print("🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳")
-    print(F"🔳GAME OVER. YOUR SCORE IS {helic.TotalScore}🔳")
+    print(F"🔳 GAME OVER. YOUR SCORE IS {helic.TotalScore}🔳")
     print("🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳")
+
 
 m = Map(MAP_W, MAP_H)
 
 helic= helico(MAP_W, MAP_H)
 
+def load_game():
+    global helic, m
+    with open("level.json", "r") as lvl:
+        data = json.load(lvl)
+        helic.import_data(data["helcopter"]) 
+        m.import_map(data["Map"])
+
 def on_release(key):
     global stopTok
-    if key.char.lower() == 'q':
-        stopTok = False
-    if key.char.lower() in "wasd":
-        helic.move(key.char.lower())
+    #При пекрехвате перехватывает всякое и это не всегда символы
+    try:
+        c = key.char.lower()
+        if c == 'q':
+            stopTok = False
+        if c in "wasd":
+            helic.move(key.char.lower())
+        if c == "f":
+            data = {"helcopter": helic.export_data(),
+                    "Map": m.export_data()}
+            with open("level.json", "w") as lvl:
+                json.dump(data, lvl)
+        if c == "g":
+           load_game()
+    except Exception as e:
+        print(e)
+        None
 
 stopTok = True
 

@@ -23,3 +23,21 @@ class helicopter:
 
     def print_stats(self):
         print('🧯' , self.tank, '/',self.mxtank, "    ", '💖', self.lives,'/', self.mxlife, "    ", "🏆", self.score, sep="" )
+
+    def export_data(self):
+        return {"score": self.score,
+                "TotalScore": self.TotalScore,
+                "lives": self.lives,
+                "mxlife": self.mxlife,
+                "x": self.x, "y" : self.y,
+                "tank": self.tank, "mxtank": self.mxtank}
+    
+    def import_data(self, data):
+        self.x = data["x"] or 0
+        self.y = data["y"] or 0
+        self.tank = data["tank"] or 0
+        self.mxtank = data["mxtank"] or 1
+        self.lives = data["lives"] or 200
+        self.mxlife = data["mxlife"] or 200
+        self.score = data["score"] or 0
+        self.TotalScore = data["TotalScore"] or 0
