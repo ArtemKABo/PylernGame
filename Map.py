@@ -23,9 +23,9 @@ class Map:
     def __init__(self, w, h):
         self.w = w
         self.h = h
-        self.upcost = 5000
-        self.lifecost = 10000
-        self.firestraff = 200
+        self.upcost = 500
+        self.lifecost = 1000
+        self.firestraff = 100
         self.clouds = clouds(w,h)
         self.cells = [[(0 if(j==0 or i == 0 or j == h-1 or i == w-1 ) else 1)  for i in range(w)] for j in range(h)]
         self.generate_forest(2, 15)

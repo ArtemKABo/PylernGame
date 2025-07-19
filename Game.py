@@ -1,46 +1,126 @@
 #🌲🚁🌊🟩🔥🏥❤🧯☁⚡🌩🌪🌨🌋🏔🏚🏆🏬🔳
-#todo Переименовать текущий файл
-# Создать меню выбор сложности игры, размера карты, загрузка сохраненной игры
 # Переделать механику огня
 from pynput import keyboard
 from Map import Map
 import time
 import json
 import os
+from sys import platform
 from Helicopter import helicopter as helico
 
 class Game:
 
-    __TICK_SLEEP = 0.001
+    __TICK_SLEEP = 0.0016
+    os_command = "clear"
     tick = 1
 
-    tree_UPDATE = 900
-    fire_UPDATE = 1100
-    clouds_UPDATE = 3900
+    tree_UPDATE = 700
+    fire_UPDATE = 900
+    fire_INTENSiVE = 1
+    fire_DiFICULT = 1
+    clouds_UPDATE = 2500
+    cloud_COWER = 1 
+    thunder_COWER = 1
+    straff_Dif = 1
     stopTok = True
 
-    def __init__(self, w = 10, h = 10, d=0):
+    def __init__(self, w = 10, h = 10):
         self.h = h
         self.w = w
-        #self.CreateDificult(d)
         self.map = Map(w, h)
         self.helico = helico(w, h)
+        self.__difining_platform()
 
-    def Menu(self):
-        input("")
-
-    def game_over(self):
+    def __Menu(self):
         os.system('cls')
+        print("🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩\n",
+              "🟩🟩🟩      ПОЖАРНЫЙ ВЕРТОЛЕТ     🟩🟩🟩\n", 
+              "🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩\n",
+              "\t ВВедите q чтобы выйти или закончить мгру \n",
+              "\t Введите 1 чтобы создать новую игру \n",
+              "\t Ввудите 2 чтоб продолжить игру с сохраненного места \n")
+        r = input("🔥🔥🔥🔥🔥 : ")
+        if r == "1":
+            self.__Create_Game()
+        elif r == "2":
+            self.__start_Load_game()
+        elif r == "q":
+            None
+        else:
+            self.__Menu()
+
+    def __difining_platform(self):
+        if platform == "linux" or platform == "linux2":
+            self.os_command =  "clear"
+        elif platform == "darwin":
+            self.os_command =  "clear"
+        elif platform == "win32":
+            self.os_command =  "cls"
+        else:
+            self.os_command =  "clear"
+
+    def __Create_Game(self):
+        os.system(self.os_command)
+        self.h = self.__inputIntOrReinput("Введите высоту игрвого поля : ")
+        self.w = self.__inputIntOrReinput("Введите ширину игрового поля : ")
+        self.fire_INTENSiVE = self.__inputIntOrReinput("Интенсивность возникновения новых пожаров : ") 
+        self.fire_DiFICULT = self.__inputIntOrReinput("Шанс возникновения нового пожара : ")
+        self.cloud_COWER = (self.__inputIntOrReinput("Введите интенсивность облачности : ")) % 20
+        self.thunder_COWER = (self.__inputIntOrReinput("Bведите интенсивность гроз : ")) % 10
+        self.straff_Dif = self.__inputIntOrReinput("Введите множительштрафа за сгоревшее дерево : ")
+        self.map = Map(self.w, self.h)
+        self.helico = helico(self.w, self.h)
+        self.__engin_game()
+
+    def __inputIntOrReinput(self, text):
+        try:
+            return int(input(text))
+        except:
+            print("Произошол некоректный ввод попробуйте сного")
+            return self.__inputIntOrReinput(text)
+
+    def __game_over(self):
+        os.system(self.os_command)
         print("🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳")
         print(F"🔳 GAME OVER. YOUR SCORE IS {self.helico.TotalScore}🔳")
         print("🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳🔳")
+        y = input("Ввудите y если хотите загрузить предыдущее сохранение: ")
+        if y == 'y':
+            self.__start_Load_game()
+        else:
+            self.__Menu()
 
+    def __start_Load_game(self):
+            self.__load_game()
+            self.__engin_game()
 
-    def load_game(self):
+    def __save_game(self):
+            data = { "h": self.h,
+                    "w": self.w,
+                    "fi": self.fire_INTENSiVE,
+                    "fd": self.fire_DiFICULT,
+                    "cc": self.cloud_COWER,
+                    "tc": self.thunder_COWER,
+                    "sd": self.straff_Dif,
+                    "helcopter": self.helico.export_data(),
+                    "Map": self.map.export_data()}
+            with open("level.json", "w") as lvl:
+                json.dump(data, lvl)
+         
+    def __load_game(self):
         with open("level.json", "r") as lvl:
             data = json.load(lvl)
+            self.h = data["h"] or 10
+            self.w = data["w"] or 10
+            self.fire_INTENSiVE = data["fi"] or 1
+            self.fire_DiFICULT = data["fd"] or 1
+            self.cloud_COWER = data["cc"] or 1
+            self.thunder_COWER = data["tc"] or 1
+            self.straff_Dif = data["sd"] or 1
+            self.map = Map(self.w, self.h)
+            self.helico = helico(self.w, self.h)
             self.helico.import_data(data["helcopter"]) 
-            m.import_map(data["Map"])
+            self.map.import_map(data["Map"])
 
     def on_release(self, key):
         global stopTok
@@ -52,20 +132,22 @@ class Game:
             if c in "wasd":
                 self.helico.move(key.char.lower())
             if c == "f":
-                data = {"helcopter": self.helico.export_data(),
-                        "Map": m.export_data()}
-                with open("level.json", "w") as lvl:
-                    json.dump(data, lvl)
+                self.__save_game()
             if c == "g":
-                self.load_game()
+                self.__load_game()
         except :#Exception as e:
             #print(e)
             None
 
     def start_game(self):
+        self.__Menu()
+
+
+
+    def __engin_game(self):
         self.stopTok = True
         while  self.stopTok:
-            os.system('cls')# unix = clear
+            os.system(self.os_command)
             self.map.heli_procces(self.helico)
             if(self.helico.lives <= 0):
                 self.stopTok = False
@@ -79,10 +161,12 @@ class Game:
             if self.tick % self.fire_UPDATE == 0:
                 self.map.update_fire(self.helico)
             if self.tick % self.clouds_UPDATE == 0:
-                self.map.clouds.update()
+                self.map.clouds.update( self.cloud_COWER, 20, self.thunder_COWER, 20)
+            if self.tick == 20000:
+                self.tick = 1
             time.sleep(self.__TICK_SLEEP)
         else:
-            self.game_over()
+            self.__game_over()
 
 
 
