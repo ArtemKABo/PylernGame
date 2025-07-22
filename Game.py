@@ -29,7 +29,7 @@ class Game:
         self.__difining_platform()
 
     def __Menu(self):
-        os.system('cls')
+        os.system(self.os_command)
         print(" 🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩\n",
               "🟩🟩🟩      ПОЖАРНЫЙ ВЕРТОЛЕТ     🟩🟩🟩\n", 
               "🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩\n",
@@ -64,7 +64,7 @@ class Game:
         self.cloud_COWER = (self.__inputIntOrReinput("Введите интенсивность облачности : ")) % 20
         self.thunder_COWER = (self.__inputIntOrReinput("Bведите интенсивность гроз : ")) % 10
         d = self.__inputIntOrReinput("Введите множитель сложности : ")
-        self.map = Map(self.w, self.h, f, d)
+        self.map.generat_map(self.w, self.h, f, d)
         self.helico = helico(self.w, self.h)
         self.__engin_game()
 

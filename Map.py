@@ -20,7 +20,7 @@ from random import randint
 CELL_TYPES = "🔳🟩🌲🌊🏥🏬🗻🔥🚁"
 
 class Map:
-                 
+
     def __init__(self, w, h, f = 1, d = 2 ):
         self.w = w
         self.h = h
@@ -31,13 +31,25 @@ class Map:
         self.firestraff = 100 * d
         self.clouds = clouds(w,h)
         self.cells = [[(0 if(j==0 or i == 0 or j == h-1 or i == w-1 ) else 1)  for i in range(w)] for j in range(h)]
+
+    def generat_map(self, w, h, f = 1, d = 2 ):
+        self.w = w
+        self.h = h
+        self.Fire = f
+        self.difficulte = d
+        self.upcost = 500 * d
+        self.lifecost = 1000 *d
+        self.firestraff = 100 * d
+        self.clouds = clouds(w,h)
+        self.cells = [[(0 if(j==0 or i == 0 or j == h-1 or i == w-1 ) else 1)  for i in range(w)] for j in range(h)]
         self.generate_forest(3, 20)
-        #self.generate_river(15) #w, h, d)
+        #self.generate_river(15) #w, h, d
         #self.generate_river(15) 
         self.__generate_waters()
         self.generate_upgrade_centre()
         self.generate_hospiral()
         self.__create_all_Fire()
+        
 
     def check_baunds(self, w, h):
         if ( h < 0 or w < 0 or  w >= self.w or h >= self.h or self.cells[h][w] == 0):
@@ -62,7 +74,7 @@ class Map:
         ind= (self.w*self.h)//150
         if ind == 0: ind = 1
         for i in range(ind):
-            self.__generate_river() if rb(1,2) else self.__Generate_Lake()
+            self.__Generate_Lake()#self.__generate_river() if rb(1,2) else 
 
     def __Generate_Lake(self):
         lake = []
@@ -71,29 +83,55 @@ class Map:
         self.cells[ry][rx] = 3
         lake.append([ry, rx]) 
         l = (randint(5,30) // self.difficulte) + 1
-        while len(lake) <= l:
+        while len(lake) < l:
+            #print ( lake, len(lake), l )
+            iter =[]
             for i in lake:
-                if len(lake) >= l : 
+                if len(lake)+ len(iter) >= l : 
                     break
-                lake.extend( self.__update_lake( i[0], i[1]) )
+                #try:
+                la = self.__update_lake( i[0], i[1]) 
+                if(len(la)>0):
+                    iter.extend(la )
+                #except Exception as e:
+                    #None
+                    #print (e, i, lake, len(lake), l )
+                    #input("oib,rf")
+            lake.extend(iter)
                 
     def __update_lake(self, y, x):
         lake = []
         if rb(1,2):
-            lake.append(self.__newWater(y + 1, x)) 
+            w = self.__newWater(y + 1, x)
+            if(w == None):
+                None
+            else: 
+                lake.append(w) 
         if rb(1,2):
-            lake.append(self.__newWater(y - 1, x) ) 
+            w = self.__newWater(y - 1, x) 
+            if(w == None):
+                None
+            else: 
+                lake.append(w) 
+        if rb(1,2): 
+            w = self.__newWater(y, x + 1) 
+            if(w == None):
+                None
+            else: 
+                lake.append(w) 
         if rb(1,2):
-            lake.append(self.__newWater(y, x + 1) ) 
-        if rb(1,2):
-            lake.append(self.__newWater(y, x- 1) ) 
+            w = self.__newWater(y, x- 1)
+            if(w == None):
+                None
+            else: 
+                lake.append(w) 
         return lake
 
     def __newWater(self, y, x):
         if(self.check_baunds(x, y)):
             if (self.cells[y][x] == 3):
                 return
-            if rb(1,2):
+            if rb(4,7):
                 self.cells[y][x] = 3
                 return [y, x]
 
