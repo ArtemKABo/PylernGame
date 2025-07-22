@@ -74,7 +74,7 @@ class Map:
         ind= (self.w*self.h)//150
         if ind == 0: ind = 1
         for i in range(ind):
-            self.__Generate_Lake()#self.__generate_river() if rb(1,2) else 
+            self.__Generate_Lake()
 
     def __Generate_Lake(self):
         lake = []
@@ -84,19 +84,21 @@ class Map:
         lake.append([ry, rx]) 
         l = (randint(5,30) // self.difficulte) + 1
         while len(lake) < l:
-            #print ( lake, len(lake), l )
             iter =[]
+            iterNone = 0
             for i in lake:
                 if len(lake)+ len(iter) >= l : 
                     break
-                #try:
                 la = self.__update_lake( i[0], i[1]) 
                 if(len(la)>0):
                     iter.extend(la )
-                #except Exception as e:
-                    #None
-                    #print (e, i, lake, len(lake), l )
-                    #input("oib,rf")
+                
+            if(len(iter) == 0):
+                iterNone += 1
+                if iterNone >= 3:
+                    break
+            else:
+                iterNone = 0
             lake.extend(iter)
                 
     def __update_lake(self, y, x):
@@ -131,64 +133,9 @@ class Map:
         if(self.check_baunds(x, y)):
             if (self.cells[y][x] == 3):
                 return
-            if rb(4,7):
+            if rb(6,7):
                 self.cells[y][x] = 3
                 return [y, x]
-
-    def __generate_river(self):
-        rc = startRiver(self.w, self.h)
-        rx, ry = rc[0], rc[1]
-        self.cells[ry][rx] = 3
-        l = (randint(5,30)// self.difficulte) + 1
-        while l > 0:
-            rc2 = randcell2(rx,ry)
-            rx2, ry2 = rc2[0], rc2[1]
-            if(self.check_baunds(rx2, ry2) ):
-                #if self.cells[ry2][rx2] == 3:
-                    #rh = self.__WaterColisium(rx, ry, ry2, rx2)
-                    #self.cells[rh[1]][rh[0]] = 3
-                    #rx, ry = rh[0], rh[1]
-                #else:
-                self.cells[ry2][rx2] = 3
-                rx, ry = rx2, ry2
-                l -= 1
-
-    def __WaterColisium(self, ox, oy, x, y):
-        if ox > x:
-            if(self.check_baunds(x - 1, y) ):
-                if self.cells[y][x - 1] == 3:
-                    return self.__WaterColisium(x, y, x - 1, y)
-                else:
-                    return [x-1, y]
-            else:
-                return self.__WaterColisium(x, y, x, y - 1)
-        if ox < x:
-            if(self.check_baunds(x + 1, y) ):
-                if self.cells[y][x + 1] == 3:
-                    return self.__WaterColisium(x, y, x + 1, y)
-                else:
-                    return [x+1, y]
-            else:
-                return self.__WaterColisium(x, y, x, y + 1)
-
-        if oy > y:
-            if(self.check_baunds(x , y - 1) ):
-                if self.cells[y - 1][x] == 3:
-                    return self.__WaterColisium(x, y, x , y - 1)
-                else:
-                    return [x, y - 1]
-            else:
-                return self.__WaterColisium(x, y, x + 1, y )
-
-        if oy < y:
-            if(self.check_baunds(x , y + 1) ):
-                if self.cells[y + 1][x] == 3:
-                    return self.__WaterColisium(x, y, x, y + 1)
-                else:
-                    return [x, y + 1]
-            else:
-                return self.__WaterColisium(x, y, x - 1, y )
-
 
     def generate_forest(self, r, mxr):
         for ri in range(self.h):
@@ -271,7 +218,7 @@ class Map:
             helico.score -= self.upcost
             helico.mxtank += 1
             if(helico.mxtank % 4 == 0):
-                helico.mxlife += 1
+                helico.mxlife += 100
         if(c == 4 and helico.score >= self.lifecost and helico.lives < helico.mxlife):
             helico.score -= self.lifecost
             helico.lives += 100
