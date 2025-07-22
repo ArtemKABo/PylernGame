@@ -14,14 +14,11 @@ class Game:
     os_command = "clear"
     tick = 1
 
-    tree_UPDATE = 700
-    fire_UPDATE = 900
-    fire_INTENSiVE = 1
-    fire_DiFICULT = 1
+    tree_UPDATE = 1200
+    fire_UPDATE = 1200
     clouds_UPDATE = 2500
     cloud_COWER = 1 
     thunder_COWER = 1
-    straff_Dif = 1
     stopTok = True
 
     def __init__(self, w = 10, h = 10):
@@ -33,12 +30,12 @@ class Game:
 
     def __Menu(self):
         os.system('cls')
-        print("🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩\n",
+        print(" 🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩\n",
               "🟩🟩🟩      ПОЖАРНЫЙ ВЕРТОЛЕТ     🟩🟩🟩\n", 
               "🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩\n",
-              "\t ВВедите q чтобы выйти или закончить мгру \n",
-              "\t Введите 1 чтобы создать новую игру \n",
-              "\t Ввудите 2 чтоб продолжить игру с сохраненного места \n")
+              "Введите q чтобы выйти или закончить мгру \n",
+              "Введите 1 чтобы создать новую игру \n",
+              "Ввудите 2 чтоб продолжить игру с сохраненного места \n")
         r = input("🔥🔥🔥🔥🔥 : ")
         if r == "1":
             self.__Create_Game()
@@ -63,12 +60,11 @@ class Game:
         os.system(self.os_command)
         self.h = self.__inputIntOrReinput("Введите высоту игрвого поля : ")
         self.w = self.__inputIntOrReinput("Введите ширину игрового поля : ")
-        self.fire_INTENSiVE = self.__inputIntOrReinput("Интенсивность возникновения новых пожаров : ") 
-        self.fire_DiFICULT = self.__inputIntOrReinput("Шанс возникновения нового пожара : ")
+        f = self.__inputIntOrReinput("Интенсивность возникновения новых пожаров : ") 
         self.cloud_COWER = (self.__inputIntOrReinput("Введите интенсивность облачности : ")) % 20
         self.thunder_COWER = (self.__inputIntOrReinput("Bведите интенсивность гроз : ")) % 10
-        self.straff_Dif = self.__inputIntOrReinput("Введите множительштрафа за сгоревшее дерево : ")
-        self.map = Map(self.w, self.h)
+        d = self.__inputIntOrReinput("Введите множитель сложности : ")
+        self.map = Map(self.w, self.h, f, d)
         self.helico = helico(self.w, self.h)
         self.__engin_game()
 
@@ -97,11 +93,8 @@ class Game:
     def __save_game(self):
             data = { "h": self.h,
                     "w": self.w,
-                    "fi": self.fire_INTENSiVE,
-                    "fd": self.fire_DiFICULT,
                     "cc": self.cloud_COWER,
                     "tc": self.thunder_COWER,
-                    "sd": self.straff_Dif,
                     "helcopter": self.helico.export_data(),
                     "Map": self.map.export_data()}
             with open("level.json", "w") as lvl:
@@ -112,11 +105,8 @@ class Game:
             data = json.load(lvl)
             self.h = data["h"] or 10
             self.w = data["w"] or 10
-            self.fire_INTENSiVE = data["fi"] or 1
-            self.fire_DiFICULT = data["fd"] or 1
             self.cloud_COWER = data["cc"] or 1
             self.thunder_COWER = data["tc"] or 1
-            self.straff_Dif = data["sd"] or 1
             self.map = Map(self.w, self.h)
             self.helico = helico(self.w, self.h)
             self.helico.import_data(data["helcopter"]) 
@@ -141,8 +131,6 @@ class Game:
 
     def start_game(self):
         self.__Menu()
-
-
 
     def __engin_game(self):
         self.stopTok = True
